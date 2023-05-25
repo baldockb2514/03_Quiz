@@ -1,3 +1,5 @@
+# v2 makes the code a bit more efficient
+
 # checks user response is yes/no or easy/normal/hard/"" to a given question
 def yn_difficulty(question, check):
     valid = False
