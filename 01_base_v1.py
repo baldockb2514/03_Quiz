@@ -5,7 +5,7 @@ def yn_difficulty(question, check):
         # make response lowercase and get rid of spaces
         response = input(question).lower().replace(" ", "")
 
-        if check == "y_n":
+        if check == "yn":
             answer_list = ["yes", "no"]
             error = "Please answer yes / no"
         elif check == "difficulty":
@@ -45,45 +45,62 @@ def instructions():
     return ""
 
 
-# Check if a number is an Integer above specified bounds
-def int_check(question, low=None, exit_code=None):
-    # set the situation depending on what parameters were entered
-    if low is not None:
-        situation = "low"
-        error = f"Please enter a number that is higher than (or equal to) {low}"
-    else:
-        situation = "any integer"
-        error = "Please enter an integer"
-
+# Check if a number is an Integer above 0(or "")
+def question_amount():
     while True:
+        response = input("How many questions?: ")
 
-        # Allow "" and the exit code to be a valid input
-        response = input(question)
-        if exit_code is not None:
-            if response == "":
-                return response
-            if response == exit_code:
-                return response
+        round_error = "Please type either <enter> or an integer that is more than(or equal to) 1"
 
-        try:
-            response = int(response)
+        if response != "":
+            try:
+                response = int(response)
 
-            # checks if a number is higher than low if only lower bounds are specified
-            if situation == "low":
-                if response >= low:
-                    return response
+                if response < 1:
+                    print(round_error)
+                    print()
+                    continue
 
-            else:
-                return response
+            except ValueError:
+                print(round_error)
+                print()
+                continue
 
-            print(error)
-
-        # If input it not an integer, print error and ask question again
-        except ValueError:
-            print(error)
-            continue
+        return response
 
 
-lowest = int_check("Any integer: ")
-highest = int_check("Above integer: ", lowest + 1)
-print("Program continues")
+# Main Routine goes here
+
+print()
+statement_decorator("Welcome to Quiz Quest!", "*")
+print()
+print_instructions = yn_difficulty("Would you like to see the instructions?: ", "yn")
+if print_instructions == "yes":
+    instructions()
+
+while True:
+
+    # Set counters and strings for later reference
+    questions_answered = 0
+    mode = "normal"
+
+    print()
+    difficulty = yn_difficulty("Do you want the questions to be Easy, Normal, Hard or a Mix?: ", "difficulty")
+    print(f"Thank you. Your questions will be {difficulty}.")
+
+    print()
+    max_questions = question_amount()
+    if max_questions == "":
+        mode = "continuous"
+
+    end_game = "no"
+    while end_game == "no":
+
+        # Set questions Heading depending on the mode
+        print()
+        if mode == "infinite":
+            heading = f"Continuous Mode: Round {questions_answered + 1}"
+        else:
+            heading = f"Round of {questions_answered + 1} of {max_questions}"
+
+        print(heading)
