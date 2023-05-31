@@ -1,20 +1,49 @@
-answer_list = ["yes", "no"]
+import random
 
-while True:
-    question = input("Yes or no?: ")
+def question_generator():
 
-    if question == answer_list[0][0]:
-        question = answer_list[0]
-        print(f"{question}")
+    functions = ["+", "-"]
 
-    elif question == answer_list[1][0]:
-        question = answer_list[1]
-        print(f"{question}")
+    first_numbers = []
+    question_outline = []
 
-    elif question == answer_list[2][0]:
-        question = answer_list[1]
-        print(f"{question}")
+    for number in range(1, 2):
 
-    elif ValueError:
-        print("not valid")
-        continue
+        number = random.randint(-10, 9)
+        if number == 0:
+            number = 10
+        first_numbers.append(number)
+        if number < 0:
+            brackets_outline = f"(x{number}"
+        else:
+            brackets_outline = f"(x+{number}"
+        question_outline.append(brackets_outline)
+        if len(question_outline) == 2:
+            break
+
+    x_value_one = sum(first_numbers)
+    integer = first_numbers[0] * first_numbers[1]
+
+    third_number = random.randint(-10, 9)
+    if third_number == 0:
+        third_number = 10
+
+    if third_number > 0:
+        third_brackets = f"(x+{third_number}"
+    else:
+        third_brackets = f"(x{third_number}"
+
+    question_outline.append(third_brackets)
+    print(question_outline)
+
+    final_x_squared_value = x_value_one + third_number
+    final_x_value = third_number * x_value_one + integer
+    final_integer = integer * third_number
+
+    if final_integer > 0:
+        final_integer = f"+{final_integer}"
+
+
+
+
+
