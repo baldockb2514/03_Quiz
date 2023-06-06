@@ -5,22 +5,30 @@ import numpy
 def question_generator(mode):
     numbers = []
     question_outline = []
+    mix_modes = ["easy", "normal", "hard"]
 
+    # If the mode is mix, for every question generate a random mode
+    if mode == "mix":
+        mode = random.choice(mix_modes)
+
+    # Questions when the mode is easy
     if mode == "easy":
+        # Get numbers
         in_bracket = random.randint(-10, 9)
+        out_of_bracket = random.randint(-10, 9)
+        # If either number is 0, make it 10
         if in_bracket == 0:
             in_bracket = 10
-        out_of_bracket = random.randint(-10, 9)
         if out_of_bracket == 0:
             out_of_bracket = 10
         final_number = in_bracket * out_of_bracket
         if in_bracket > 0:
             in_bracket = f"+{in_bracket}"
-        brackets_outline = f"{out_of_bracket}(x{in_bracket})"
-        question_outline.append(brackets_outline)
         if final_number > 0:
             final_number = f"+{final_number}"
         answer = f"{out_of_bracket}x{final_number}"
+        brackets_outline = f"{out_of_bracket}(x{in_bracket})"
+        question_outline.append(brackets_outline)
 
     elif mode == "normal" or mode == "hard":
         for number in range(1, 3):
@@ -52,7 +60,7 @@ def question_generator(mode):
                 integer = f"+{integer}"
             answer = f"x^2{x_value_one}x{integer}"
 
-        elif mode == "hard":
+        else:
             while True:
                 third_number = random.randint(-10, 9)
                 third_number_2 = -1 * third_number
@@ -83,9 +91,13 @@ def question_generator(mode):
             answer = f"X^3{final_x_squared_value}x^2{final_x_value}x{final_integer}"
 
     print()
+    print(mode)
+    # unpack the list and put the items right nxt to eachother
     print(*question_outline, sep="")
+    # Print the answer for testing purposes
     print(answer)
     get_answer = input(f"Please solve this question: ")
+    # Return weather their answer is correct or incorrect
     if get_answer == answer:
         result = "correct"
     else:
@@ -95,6 +107,21 @@ def question_generator(mode):
 
 
 while True:
+
+    mix_test = question_generator("mix")
+
+    if mix_test == "correct":
+        print("Correct! Congratulations!")
+    else:
+        print("Incorrect.")
+
+    mix_test_2 = question_generator("mix")
+
+    if mix_test_2 == "correct":
+        print("Correct! Congratulations!")
+    else:
+        print("Incorrect.")
+
     easy_test = question_generator("easy")
 
     if easy_test == "correct":
