@@ -3,9 +3,11 @@ import numpy
 
 
 def question_generator(mode):
+    # Set up lists
     numbers = []
     question_outline = []
     mix_modes = ["easy", "normal", "hard"]
+    times_answered = 0
 
     # If the mode is mix, for every question generate a random mode
     if mode == "mix":
@@ -22,10 +24,12 @@ def question_generator(mode):
         if out_of_bracket == 0:
             out_of_bracket = 10
         final_number = in_bracket * out_of_bracket
+        # Add a plus sign for positive numbers, so that the question has a function
         if in_bracket > 0:
             in_bracket = f"+{in_bracket}"
         if final_number > 0:
             final_number = f"+{final_number}"
+        # Set answer and question
         answer = f"{out_of_bracket}x{final_number}"
         brackets_outline = f"{out_of_bracket}(x{in_bracket})"
         question_outline.append(brackets_outline)
@@ -33,12 +37,13 @@ def question_generator(mode):
     elif mode == "normal" or mode == "hard":
         for number in range(1, 3):
 
+            # Get 2 sets of brackets
             while True:
                 number = random.randint(-10, 9)
                 number_2 = -1 * number
                 if number == 0:
                     number = 10
-                if number not in numbers and number_2 not in numbers:
+                if number_2 not in numbers:
                     numbers.append(number)
                     break
 
@@ -62,10 +67,13 @@ def question_generator(mode):
 
         else:
             while True:
+                # Get the number in the 3rd bracket
                 third_number = random.randint(-10, 9)
-                third_number_2 = -1 * third_number
+                # Set any 0's to 10
                 if third_number == 0:
                     third_number = 10
+                # Don't allow a negative and positive version of the same number in a question to prevent errors
+                third_number_2 = -1 * third_number
                 if third_number not in numbers and third_number_2 not in numbers:
                     numbers.append(third_number)
                     break
@@ -90,55 +98,74 @@ def question_generator(mode):
 
             answer = f"X^3{final_x_squared_value}x^2{final_x_value}x{final_integer}"
 
+
     print()
-    print(mode)
-    # unpack the list and put the items right nxt to eachother
-    print(*question_outline, sep="")
+    print(f"{mode} test:")
     # Print the answer for testing purposes
     print(answer)
-    get_answer = input(f"Please solve this question: ")
-    # Return weather their answer is correct or incorrect
-    if get_answer == answer:
-        result = "correct"
-    else:
-        print(answer)
-        result = "wrong"
-    return result
+    incorrect_answers = []
+    while True:
+        # unpack the list and put the items right nxt to each other
+        print(*question_outline, sep="")
+        get_answer = input(f"Please solve this question: ")
+        if get_answer in incorrect_answers:
+            print("Please give an answer you have not tried before. ")
+            continue
+        # Return whether their answer is correct or incorrect
+        if get_answer == answer:
+            times_answered += 1
+            print(f"Well done! You got it in {times_answered}.")
+            result = "correct"
+            return result
+            break
+        else:
+            incorrect_answers.append(get_answer)
+            times_answered += 1
+            try_again = input("Incorrect. Would you like to try again? ").lower()
+            if try_again == "yes":
+                continue
+            else:
+                break
 
 
 while True:
 
-    mix_test = question_generator("mix")
+    easy_test = question_generator("hard")
 
-    if mix_test == "correct":
-        print("Correct! Congratulations!")
-    else:
-        print("Incorrect.")
+    if easy_test != "correct":
+        print("Ok. Good luck next time. ")
 
-    mix_test_2 = question_generator("mix")
+    easy_test = question_generator("hard")
 
-    if mix_test_2 == "correct":
-        print("Correct! Congratulations!")
-    else:
-        print("Incorrect.")
-
-    easy_test = question_generator("easy")
-
-    if easy_test == "correct":
-        print("Correct! Congratulations!")
-    else:
-        print("Incorrect.")
+    if easy_test != "correct":
+        print("Ok. Good luck next time. ")
 
     normal_test = question_generator("normal")
 
-    if normal_test == "correct":
-        print("Correct! Congratulations!")
-    else:
-        print("Incorrect.")
+    if normal_test != "correct":
+        print("Ok. Good luck next time. ")
+
+    normal_test = question_generator("normal")
+
+    if normal_test != "correct":
+        print("Ok. Good luck next time. ")
 
     hard_test = question_generator("hard")
 
-    if hard_test == "correct":
-        print("Correct! Congratulations!")
-    else:
-        print("Incorrect.")
+    if hard_test != "correct":
+        print("Ok. Good luck next time. ")
+
+    hard_test = question_generator("hard")
+
+    if hard_test != "correct":
+        print("Ok. Good luck next time. ")
+
+    mix_test = question_generator("mix")
+
+    if mix_test != "correct":
+        print("Ok. Good luck next time. ")
+
+    mix_test_2 = question_generator("mix")
+
+    if mix_test_2 != "correct":
+        print("Ok. Good luck next time. ")
