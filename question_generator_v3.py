@@ -2,7 +2,12 @@ import random
 import numpy
 
 
-def question_generator(mode):
+def unpack(*list_unpack):
+    unpacked = f"{list_unpack}".replace(",", "").replace("'", "").replace(" ", "")
+    return unpacked
+
+
+def question_generator(mode, question_type):
     # Set up lists
     numbers = []
     question_outline = []
@@ -30,7 +35,7 @@ def question_generator(mode):
         if final_number > 0:
             final_number = f"+{final_number}"
         # Set answer and question
-        answer = f"{out_of_bracket}x{final_number}"
+        solved = f"{out_of_bracket}x{final_number}"
         brackets_outline = f"{out_of_bracket}(x{in_bracket})"
         question_outline.append(brackets_outline)
 
@@ -63,7 +68,7 @@ def question_generator(mode):
                 x_value_one = f"+{x_value_one}"
             if integer > 0:
                 integer = f"+{integer}"
-            answer = f"x^2{x_value_one}x{integer}"
+            solved = f"x^2{x_value_one}x{integer}"
 
         else:
             while True:
@@ -78,11 +83,13 @@ def question_generator(mode):
                     numbers.append(third_number)
                     break
 
+            # if generated number is positive, add a add symbol infront for printing purposes, also turn it into bracket
             if third_number > 0:
                 third_brackets = f"(x+{third_number})"
             else:
                 third_brackets = f"(x{third_number})"
 
+            # append bracket to question outline
             question_outline.append(third_brackets)
 
             final_x_squared_value = x_value_one + third_number
@@ -96,74 +103,51 @@ def question_generator(mode):
             if final_x_squared_value > 0:
                 final_x_squared_value = f"+{final_x_squared_value}"
 
-            answer = f"X^3{final_x_squared_value}x^2{final_x_value}x{final_integer}"
+            solved = f"X^3{final_x_squared_value}x^2{final_x_value}x{final_integer}"
 
-        print()
-        print(f"{mode} test:")
-        # Print the answer for testing purposes
-        print(answer)
-        incorrect_answers = []
-        while True:
-            # unpack the list and put the items right nxt to each other
-            print(*question_outline, sep="")
-            get_answer = input(f"Please solve this question: ")
-            if get_answer in incorrect_answers:
-                print("Please give an answer you have not tried before. ")
-                continue
-            # Return whether their answer is correct or incorrect
-            if get_answer == answer:
-                times_answered += 1
-                print(f"Well done! You got it in {times_answered}.")
-                result = "correct"
-                return result
-                break
-            else:
-                incorrect_answers.append(get_answer)
-                times_answered += 1
-                try_again = input("Incorrect. Would you like to try again? ").lower()
-                if try_again == "yes":
-                    continue
-                else:
-                    break
-
+    if question_type == "expand":
+        question = unpack(*question_outline)
+        answer = solved
+    else:
+        question = solved
+        answer = unpack(*question_outline)
+    print()
+    print(f"{mode} {question_type} test:")
+    # Print the answer for testing purposes
+    print(answer)
+    incorrect_answers = []
     while True:
+        # unpack the list and put the items right nxt to each other
+        print(question)
+        get_answer = input(f"Please {question_type} this equation: ")
+        if get_answer in incorrect_answers:
+            print("Please give an answer you have not tried before. ")
+            continue
+        # Return whether their answer is correct or incorrect
+        if get_answer == answer:
+            times_answered += 1
+            print(f"Well done! You got it in {times_answered}.")
+            result = "correct"
+            return result
+            break
+        else:
+            incorrect_answers.append(get_answer)
+            times_answered += 1
+            try_again = input("Incorrect. Would you like to try again? ").lower()
+            if try_again == "yes":
+                continue
+            else:
+                break
 
-        easy_test = question_generator("hard")
 
-        if easy_test != "correct":
-            print("Ok. Good luck next time. ")
+while True:
 
-        easy_test = question_generator("hard")
+    factorise_test = question_generator("mix", "factorise")
 
-        if easy_test != "correct":
-            print("Ok. Good luck next time. ")
+    if factorise_test != "correct":
+        print("Good luck next time.")
 
-        normal_test = question_generator("normal")
+    expand_test = question_generator("mix", "expand")
 
-        if normal_test != "correct":
-            print("Ok. Good luck next time. ")
-
-        normal_test = question_generator("normal")
-
-        if normal_test != "correct":
-            print("Ok. Good luck next time. ")
-
-        hard_test = question_generator("hard")
-
-        if hard_test != "correct":
-            print("Ok. Good luck next time. ")
-
-        hard_test = question_generator("hard")
-
-        if hard_test != "correct":
-            print("Ok. Good luck next time. ")
-
-        mix_test = question_generator("mix")
-
-        if mix_test != "correct":
-            print("Ok. Good luck next time. ")
-
-        mix_test_2 = question_generator("mix")
-
-        if mix_test_2 != "correct":
-            print("Ok. Good luck next time. ")
+    if expand_test != "correct":
+        print("Good luck next time.")
