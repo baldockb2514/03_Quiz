@@ -1,10 +1,5 @@
 import random
-import numpy
-
-
-def unpack(*list_unpack):
-    unpacked = f"{list_unpack}".replace(",", "").replace("'", "").replace(" ", "")
-    return unpacked
+import math
 
 
 def question_generator(mode, question_type):
@@ -12,6 +7,7 @@ def question_generator(mode, question_type):
     numbers = []
     question_outline = []
     mix_modes = ["easy", "normal", "hard"]
+    # (put guess / times answered out of component when integrating)
     times_answered = 0
 
     # If the mode is mix, for every question generate a random mode
@@ -40,9 +36,11 @@ def question_generator(mode, question_type):
         question_outline.append(brackets_outline)
 
     elif mode == "normal" or mode == "hard":
+
+        # Get 2 sets of brackets
         for number in range(1, 3):
 
-            # Get 2 sets of brackets
+            # Make sure that both the positive and negative version of a number are both in one question
             while True:
                 number = random.randint(-10, 9)
                 number_2 = -1 * number
@@ -61,7 +59,7 @@ def question_generator(mode, question_type):
                 break
 
         x_value_one = sum(numbers)
-        integer = numpy.prod(numbers)
+        integer = math.prod(numbers)
 
         if mode == "normal":
             if x_value_one > 0:
@@ -83,7 +81,8 @@ def question_generator(mode, question_type):
                     numbers.append(third_number)
                     break
 
-            # if generated number is positive, add a add symbol infront for printing purposes, also turn it into bracket
+            # if generated number is positive, add a plus symbol in front of the number for printing purposes,
+            # also turn it into bracket
             if third_number > 0:
                 third_brackets = f"(x+{third_number})"
             else:
@@ -92,10 +91,12 @@ def question_generator(mode, question_type):
             # append bracket to question outline
             question_outline.append(third_brackets)
 
+            # solve the numbers
             final_x_squared_value = x_value_one + third_number
             final_x_value = third_number * x_value_one + integer
             final_integer = integer * third_number
 
+            # If any of the integers are above 0, Add a plus symbol so the user knows the question
             if final_integer > 0:
                 final_integer = f"+{final_integer}"
             if final_x_value > 0:
@@ -105,21 +106,26 @@ def question_generator(mode, question_type):
 
             solved = f"X^3{final_x_squared_value}x^2{final_x_value}x{final_integer}"
 
+    # Set questions and answers depending on if the question is a factorising or expanding question
     if question_type == "expand":
-        question = unpack(*question_outline)
+        question_tuple = tuple(question_outline)
+        question = "".join(question_tuple)
         answer = solved
     else:
         question = solved
-        answer = unpack(*question_outline)
+        answer_tuple = tuple(question_outline)
+        answer = "".join(answer_tuple)
+    # Print difficulty and mode for testing purposes
     print()
     print(f"{mode} {question_type} test:")
     # Print the answer for testing purposes
     print(answer)
+    # Set a list to prevent duplicate answers
     incorrect_answers = []
     while True:
         # unpack the list and put the items right nxt to each other
         print(question)
-        get_answer = input(f"Please {question_type} this equation: ")
+        get_answer = input(f"Please {question_type} this equation: ").replace(" ", "")
         if get_answer in incorrect_answers:
             print("Please give an answer you have not tried before. ")
             continue
@@ -129,17 +135,24 @@ def question_generator(mode, question_type):
             print(f"Well done! You got it in {times_answered}.")
             result = "correct"
             return result
-            break
         else:
             incorrect_answers.append(get_answer)
             times_answered += 1
-            try_again = input("Incorrect. Would you like to try again? ").lower()
-            if try_again == "yes":
-                continue
+            # Allow the user multiple answers
+            if times_answered < 5:
+                try_again = input("Incorrect. Would you like to try again? ").lower()
+                if try_again == "yes":  # Change to yes/no check
+                    print()
+                    print(f"Try {times_answered}/5")
+                    continue
+                else:
+                    break
             else:
+                print("You ran out of tries.")
                 break
 
 
+# Testing
 while True:
 
     factorise_test = question_generator("mix", "factorise")
