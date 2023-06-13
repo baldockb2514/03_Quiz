@@ -7,8 +7,8 @@ def question_generator(mode, question_type):
     numbers = []
     question_outline = []
     mix_modes = ["easy", "normal", "hard"]
-    # (put guess / times answered out of component when integrating)
-    times_answered = 0
+    # (put guess / times answered out of component when integrating for scoring purposes)
+    times_answered = 1
 
     # If the mode is mix, for every question generate a random mode
     if mode == "mix":
@@ -16,20 +16,24 @@ def question_generator(mode, question_type):
 
     # Questions when the mode is easy
     if mode == "easy":
-        # Get numbers
+        # Get numbers for the solved string
         in_bracket = random.randint(-10, 9)
         out_of_bracket = random.randint(-10, 9)
+
         # If either number is 0, make it 10
         if in_bracket == 0:
             in_bracket = 10
         if out_of_bracket == 0:
             out_of_bracket = 10
+        # get one of the numbers for the solved string
         final_number = in_bracket * out_of_bracket
+
         # Add a plus sign for positive numbers, so that the question has a function
         if in_bracket > 0:
             in_bracket = f"+{in_bracket}"
         if final_number > 0:
             final_number = f"+{final_number}"
+
         # Set answer and question
         solved = f"{out_of_bracket}x{final_number}"
         brackets_outline = f"{out_of_bracket}(x{in_bracket})"
@@ -131,7 +135,6 @@ def question_generator(mode, question_type):
             continue
         # Return whether their answer is correct or incorrect
         if get_answer == answer:
-            times_answered += 1
             print(f"Well done! You got it in {times_answered}.")
             result = "correct"
             return result
@@ -139,17 +142,20 @@ def question_generator(mode, question_type):
             incorrect_answers.append(get_answer)
             times_answered += 1
             # Allow the user multiple answers
-            if times_answered < 5:
+            if times_answered < 6:
                 try_again = input("Incorrect. Would you like to try again? ").lower()
                 if try_again == "yes":  # Change to yes/no check
+                    print(f"You have {6 - times_answered} tries left")
                     print()
-                    print(f"Try {times_answered}/5")
                     continue
                 else:
-                    break
+                    result = "incorrect"
+                    return result
+            # Don't allow them more than 5 tries
             else:
-                print("You ran out of tries.")
-                break
+                print("Incorrect. You ran out of tries.")
+                result = "incorrect"
+                return result
 
 
 # Testing
