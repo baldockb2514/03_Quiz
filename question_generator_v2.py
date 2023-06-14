@@ -1,3 +1,4 @@
+# V2 - Give user multiple tries, Add the mix mode
 import random
 import numpy
 

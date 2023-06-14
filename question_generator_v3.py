@@ -1,3 +1,4 @@
+# V3 - Add factorise questions
 import random
 import math
 
@@ -9,6 +10,7 @@ def question_generator(mode, question_type):
     mix_modes = ["easy", "normal", "hard"]
     # (put guess / times answered out of component when integrating for scoring purposes)
     times_answered = 1
+    solved = ""
 
     # If the mode is mix, for every question generate a random mode
     if mode == "mix":
@@ -131,7 +133,8 @@ def question_generator(mode, question_type):
         print(question)
         get_answer = input(f"Please {question_type} this equation: ").replace(" ", "")
         if get_answer in incorrect_answers:
-            print("Please give an answer you have not tried before. ")
+            print(f"Please give an answer you have not tried before.\n You *still* have {6 - times_answered} tries "
+                  f"left. ")
             continue
         # Return whether their answer is correct or incorrect
         if get_answer == answer:
@@ -146,7 +149,6 @@ def question_generator(mode, question_type):
                 try_again = input("Incorrect. Would you like to try again? ").lower()
                 if try_again == "yes":  # Change to yes/no check
                     print(f"You have {6 - times_answered} tries left")
-                    print()
                     continue
                 else:
                     result = "incorrect"
@@ -161,12 +163,7 @@ def question_generator(mode, question_type):
 # Testing
 while True:
 
-    factorise_test = question_generator("mix", "factorise")
+    mix_test = question_generator("mix", "factorise")
 
-    if factorise_test != "correct":
-        print("Good luck next time.")
-
-    expand_test = question_generator("mix", "expand")
-
-    if expand_test != "correct":
+    if mix_test == "incorrect":
         print("Good luck next time.")
