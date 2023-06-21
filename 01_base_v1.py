@@ -73,7 +73,6 @@ def question_generator(mode, question_type):
     question_outline = []
     mix_modes = ["easy", "normal", "hard"]
     mix_types = ["factorise", "expand"]
-    # (put guess / times answered out of component when integrating for scoring purposes)
     solved = ""
 
     # If the mode/type is mix, for every question generate a random mode/type
@@ -198,14 +197,12 @@ def question_generator(mode, question_type):
     return answer
 
 
-
 # Main Routine goes here
-
 print()
 statement_decorator("Welcome to Quiz Quest!", "*")
 print()
 # ask the user if they want to see the instructions
-print_instructions = string_check("Yes or No? ", ["yes", "no"], "Please answer yes/no.")
+print_instructions = string_check("Would you like to see the instructions?: ", ["yes", "no"], "Please answer yes/no.")
 # if yes, print the instructions
 if print_instructions == "yes":
     instructions()
@@ -214,12 +211,18 @@ while True:
 
     # Set counters and strings for later reference
     questions_answered = 0
+    incorrect_answers = 0
+    correct_answers = 0
+    score = 0
+    game_summary = []
+    game_score = []
 
     # get the mode
     print()
-    question_mode = string_check("Would you like your to answer Factorise questions, Expand questions, or a Mix?? ",
-                                 ["factorise", "expand", "mix"], "please answer factorise/expand/mix")
-    print(f"Thank you. You will get {question_mode} questions.")
+    question_mode = string_check("Would you like factorise questions, expand questions,"
+                                 " or a mix of both? ",
+                                 ["factorise", "expand", "mix"], "please answer factorise/expand/mixed")
+    print(f"Thank you. Your question type is {question_mode}.")
 
     # get the difficulty
     print()
@@ -244,6 +247,7 @@ while True:
             heading = f"Question of {questions_answered + 1} of {max_questions}"
 
         print(heading)
+        questions_answered += 1
 
         # only allow a set amount of incorrect answers
         times_answered = 0
@@ -253,7 +257,11 @@ while True:
 
         while True:
             get_answer = question_generator(difficulty, question_mode)
-            user_answer = input(f"Please {question_mode} this equation: ").replace(" ", "")
+            print(get_answer)
+            if get_answer[1] == "(" or get_answer[2] == "(":
+                user_answer = input(f"Please factorise this equation: ").replace(" ", "")
+            else:
+                user_answer = input(f"Please expand this equation: ").replace(" ", "")
             times_answered += 1
 
             # if the answer is a duplicate, print an error and reprint the question
@@ -265,6 +273,8 @@ while True:
             if user_answer == get_answer:
                 print(f"Well done! You got it in {times_answered}.")
                 result = "correct"
+                score = times_answered
+                outcome = f"Round: {questions_answered}\n You got it in {score}."
 
             else:
                 incorrect_answers.append(user_answer)
@@ -275,10 +285,13 @@ while True:
                         print(f"You have {6 - times_answered} tries left")
                         continue
                     else:
-                        result = "incorrect"
+                        print("Good luck next time.")
+                        outcome = f"Round: {questions_answered}\n You lost."
+                        score = 6
 
                 # Don't allow them more than 5 tries
                 else:
                     print("Incorrect. You ran out of tries.")
                     result = "incorrect"
-
+                    outcome = f"Round: {questions_answered}\n You ran out of tries."
+                    score = 6
