@@ -3,6 +3,7 @@ import random
 import math
 
 
+# generate questions
 def question_generator(mode, question_type):
     # Set up lists
     numbers = []
@@ -124,6 +125,7 @@ def question_generator(mode, question_type):
         question = solved
         answer_tuple = tuple(question_outline)
         answer = "".join(answer_tuple)
+
     # Print difficulty and mode for testing purposes
     print()
     print(f"{mode} {question_type} test:")
@@ -169,4 +171,5 @@ while True:
     mix_test = question_generator("mix", "factorise")
 
     if mix_test == "incorrect":
-        print("Good luck next time.")
+        print("good luck next time")
+
