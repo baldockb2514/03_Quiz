@@ -1,7 +1,7 @@
 # v1 - recycled from RPS
 
 # Check if a number is an Integer above 0(or "")
-def check_rounds():
+def question_amount():
     while True:
         response = input("How many rounds?: ")
 

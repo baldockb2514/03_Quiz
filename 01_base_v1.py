@@ -189,10 +189,6 @@ def question_generator(mode, question_type):
 
     # Print difficulty and mode for testing purposes
     print()
-    print(f"{mode} {question_type} test:")
-    # Print the answer for testing purposes
-    print(answer)
-
     print(question)
     return answer
 
@@ -212,42 +208,42 @@ while True:
     # Set counters and strings for later reference
     questions_answered = 0
     incorrect_answers = 0
-    correct_answers = 0
+    correct_questions = 0
+    incorrect_questions = 0
     score = 0
-    game_summary = []
-    game_score = []
+    quiz_summary = []
+    quiz_score = []
+    outcome = ""
 
     # get the mode
     print()
-    question_mode = string_check("Would you like factorise questions, expand questions,"
-                                 " or a mix of both? ",
-                                 ["factorise", "expand", "mix"], "please answer factorise/expand/mixed")
-    print(f"Thank you. Your question type is {question_mode}.")
+    quiz_mode = string_check("Would you like factorise questions, expand questions, or a mix of both? ",
+                             ["factorise", "expand", "mix"], "please answer factorise/expand/mixed")
+    print(f"Thank you. Your question type is {quiz_mode}.")
 
     # get the difficulty
     print()
-    difficulty = string_check("Do you want the questions to be Easy, Normal, Hard or Mixed?: ",
-                              ["easy", "normal", "hard", "mixed"], "Please enter easy/normal/hard/mixed.")
+    difficulty = string_check("Do you want the questions to be Easy, Normal, Hard or a Mix?: ",
+                              ["easy", "normal", "hard", "mix"], "Please enter easy/normal/hard/mix.")
     print(f"Thank you. Your questions will be {difficulty}.")
 
     # get the amount of questions
     print()
     max_questions = question_amount()
     if max_questions == "":
-        round_mode = "continuous"
+        quiz_mode = "continuous"
 
     end_game = "no"
     while end_game == "no":
 
         # Set questions Heading depending on the mode
         print()
-        if question_mode == "infinite":
+        if quiz_mode == "continuous":
             heading = f"Continuous Mode: Question {questions_answered + 1}"
         else:
             heading = f"Question of {questions_answered + 1} of {max_questions}"
 
-        print(heading)
-        questions_answered += 1
+        statement_decorator(heading, "-")
 
         # only allow a set amount of incorrect answers
         times_answered = 0
@@ -256,42 +252,108 @@ while True:
         incorrect_answers = []
 
         while True:
-            get_answer = question_generator(difficulty, question_mode)
+            get_answer = question_generator(difficulty, quiz_mode)
             print(get_answer)
-            if get_answer[1] == "(" or get_answer[2] == "(":
+            if "(" in get_answer:
                 user_answer = input(f"Please factorise this equation: ").replace(" ", "")
             else:
                 user_answer = input(f"Please expand this equation: ").replace(" ", "")
             times_answered += 1
 
+            # If user inputs xxx, end game
+            if user_answer == "xxx":
+                end_game = "yes"
+                break
+
             # if the answer is a duplicate, print an error and reprint the question
-            if get_answer in incorrect_answers:
+            elif user_answer in incorrect_answers:
                 print(f"Please give an answer you have not tried before.\n You *still* have {6 - times_answered} tries "
                       f"left. ")
                 continue
             # Return whether their answer is correct or incorrect
-            if user_answer == get_answer:
-                print(f"Well done! You got it in {times_answered}.")
+            elif user_answer == get_answer:
+                statement_decorator(f"Well done! You got it in {times_answered}.", "*")
                 result = "correct"
                 score = times_answered
                 outcome = f"Round: {questions_answered}\n You got it in {score}."
+                break
 
             else:
                 incorrect_answers.append(user_answer)
                 # Allow the user multiple answers
                 if times_answered <= 5:
-                    try_again = input("Incorrect. Would you like to try again? ").lower()
+                    try_again = string_check("Incorrect. Would you like to try again? ", ["yes", "no"],
+                                             "Please answer yes/no").lower()
                     if try_again == "yes":  # Change to yes/no check
-                        print(f"You have {6 - times_answered} tries left")
+                        statement_decorator(f"You have {6 - times_answered} tries left", "!")
                         continue
                     else:
-                        print("Good luck next time.")
+                        statement_decorator("Good luck next time.", "~")
                         outcome = f"Round: {questions_answered}\n You lost."
                         score = 6
+                        incorrect_questions += 1
+                        break
 
                 # Don't allow them more than 5 tries
                 else:
                     print("Incorrect. You ran out of tries.")
                     result = "incorrect"
                     outcome = f"Round: {questions_answered}\n You ran out of tries."
+                    incorrect_questions += 1
                     score = 6
+                    break
+
+        # If the exit code was entered, don't append the outcome. Otherwise, add the outcome to the list
+        if user_answer != "xxx":
+            quiz_summary.append(outcome)
+            quiz_score.append(score)
+            questions_answered += 1
+            # if the number of questions is more than questions answered or the mode is continuous, continue quiz
+            if quiz_mode == "continuous" or max_questions > questions_answered:
+                continue
+            # otherwise, end quiz
+            else:
+                break
+
+    # if at least one question has been answered, ask the user if they want to see a summary of their quiz,
+    if questions_answered != 0:
+        print()
+        see_summary = string_check("Would you like to see the summary of your game? ", ["yes", "no"],
+                                   "Please answer yes/no")
+        if see_summary == "yes":
+            # Calculate quiz statistics (Best score, worst score average)
+            percent_correct = correct_questions / questions_answered * 100
+            percent_incorrect = incorrect_questions / questions_answered * 100
+            best_score = min(quiz_score)
+            worst_score = max(quiz_score)
+            ave_score = (sum(quiz_score)) / len(quiz_score)
+
+            # print quiz summary heading
+            print("***** Quiz History *****")
+            for outcome in quiz_summary:
+                # Print the outcome of each round
+                print(outcome)
+
+            print()
+
+            # displays quiz stats with % values to the nearest whole number
+            print("Game Statistics", "*")
+            print("Win: {}, ({:.0f}%)\nLoss: {}, "
+                  "({:.0f}%)".format(correct_questions, percent_correct, incorrect_questions, percent_incorrect))
+            # displays the best, worst and average score
+            print(f"Best Score: {best_score:.0f}\nWorst Score: {worst_score:.0f}\nAverage Score: {ave_score:.2f}")
+
+    # Asks if the user wants to replay the quiz
+    print()
+    replay = string_check("Would you like to play again?: ", ["yes", "no"], "Please answer yes/no")
+
+    # If yes, Replay quiz
+    if replay == "yes":
+        continue
+    # Else, end program
+    else:
+        break
+
+# Thanks the user for playing
+print()
+print("Thank you for playing!!")
