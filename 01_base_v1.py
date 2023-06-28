@@ -41,12 +41,20 @@ def instructions():
     print(" The modes you can choose are factorise questions, and expand questions. "
           "You can also enter mix, if you want both. ")
     print()
-    print("The Difficulties are easy, normal and hard.")
-    print("Easy questions have 1 bracket, eg. 2(x-1)")
-    print("Normal questions have 2 brackets, eg. (x+1)(x-2)")
-    print("Hard questions will have 3 brackets, eg. (x-1)(x+2)(x-3).")
+    print("The Difficulties you can choose from are easy, normal, hard and mix.")
+    print(" - Easy questions have 1 bracket, eg. 2(x-1)")
+    print(" - Normal questions have 2 brackets, eg. (x+1)(x-2)")
+    print(" - Hard questions will have 3 brackets, eg. (x-1)(x+2)(x-3).")
+    print(" - If you choose mix, every question will have a random difficulty.")
     print()
-    print("You will")
+    print("You will then be given a question and asked to answer it.")
+    print(" - For exponents, please use the ^ symbol, eg. x^2.")
+    print()
+    print("You will have 5 tries to get the answer correct.")
+    print()
+    print("To exit the game, you can enter \"xxx\" when asked for your answer.")
+    print()
+    print("Enjoy!")
     return ""
 
 
@@ -119,7 +127,7 @@ def question_generator(mode, question_type):
         # Get 2 sets of brackets
         for number in range(1, 3):
 
-            # Make sure that both the positive and negative version of a number are both in one question
+            # Make sure that both the positive and negative version of a number aren't both in the same question
             while True:
                 number = random.randint(-10, 9)
                 number_2 = -1 * number
@@ -227,7 +235,7 @@ while True:
     # get the mode
     print()
     question_mode = string_check("Would you like factorise questions, expand questions, or a mix of both? ",
-                             ["factorise", "expand", "mix"], "please answer factorise/expand/mixed")
+                                 ["factorise", "expand", "mix"], "please answer factorise/expand/mixed")
     print(f"Thank you. Your question type is {question_mode}.")
 
     # get the difficulty
@@ -265,9 +273,9 @@ while True:
             get_answer = question_generator(difficulty, question_mode)
             print(get_answer)
             if "(" in get_answer:
-                user_answer = input(f"Please factorise this equation: ").replace(" ", "")
+                user_answer = input(f"Please factorise this equation: ").replace(" ", "").lower()
             else:
-                user_answer = input(f"Please expand this equation: ").replace(" ", "")
+                user_answer = input(f"Please expand this equation: ").replace(" ", "").lower()
             times_answered += 1
 
             # If user inputs xxx, end game
@@ -301,7 +309,7 @@ while True:
                         continue
                     else:
                         statement_decorator("Good luck next time.", "~")
-                        outcome = f"Round: {questions_answered + 1}\n You lost.\n"
+                        outcome = f"Round: {questions_answered + 1}\n Incorrect.\n"
                         score = 6
                         incorrect_questions += 1
                         break
@@ -349,8 +357,8 @@ while True:
                 print(outcome)
 
             # displays quiz stats with % values to the nearest whole number
-            statement_decorator("Game Statistics", "=")
-            print("Win: {}, ({:.0f}%)\nLoss: {}, "
+            statement_decorator("Quiz Statistics", "=")
+            print("Correct: {}, ({:.0f}%)\nIncorrect: {}, "
                   "({:.0f}%)".format(correct_questions, percent_correct, incorrect_questions, percent_incorrect))
             # displays the best, worst and average score
             print(f"Best Score: {best_score:.0f}\nWorst Score: {worst_score:.0f}\nAverage Score: {ave_score:.2f}")
