@@ -37,8 +37,16 @@ def statement_decorator(statement, decoration):
 def instructions():
     statement_decorator("How to Play", "*")
     print()
-    print("Display instructions")
+    print("For each game you play, you will be asked to choose a mode and difficulty.")
+    print(" The modes you can choose are factorise questions, and expand questions. "
+          "You can also enter mix, if you want both. ")
     print()
+    print("The Difficulties are easy, normal and hard.")
+    print("Easy questions have 1 bracket, eg. 2(x-1)")
+    print("Normal questions have 2 brackets, eg. (x+1)(x-2)")
+    print("Hard questions will have 3 brackets, eg. (x-1)(x+2)(x-3).")
+    print()
+    print("You will")
     return ""
 
 
@@ -66,7 +74,7 @@ def question_amount():
         return response
 
 
-# generate questions
+# generate questions and answers
 def question_generator(mode, question_type):
     # Set up lists
     numbers = []
@@ -182,15 +190,16 @@ def question_generator(mode, question_type):
         question_tuple = tuple(question_outline)
         question = "".join(question_tuple)
         answer = solved
-    else:
+        # print question and return answer
+        print(question)
+        return answer
+    elif question_type == "factorise":
         question = solved
         answer_tuple = tuple(question_outline)
         answer = "".join(answer_tuple)
-
-    # Print difficulty and mode for testing purposes
-    print()
-    print(question)
-    return answer
+        # print question and return answer
+        print(question)
+        return answer
 
 
 # Main Routine goes here
@@ -217,9 +226,9 @@ while True:
 
     # get the mode
     print()
-    quiz_mode = string_check("Would you like factorise questions, expand questions, or a mix of both? ",
+    question_mode = string_check("Would you like factorise questions, expand questions, or a mix of both? ",
                              ["factorise", "expand", "mix"], "please answer factorise/expand/mixed")
-    print(f"Thank you. Your question type is {quiz_mode}.")
+    print(f"Thank you. Your question type is {question_mode}.")
 
     # get the difficulty
     print()
@@ -229,6 +238,7 @@ while True:
 
     # get the amount of questions
     print()
+    quiz_mode = ""
     max_questions = question_amount()
     if max_questions == "":
         quiz_mode = "continuous"
@@ -252,7 +262,7 @@ while True:
         incorrect_answers = []
 
         while True:
-            get_answer = question_generator(difficulty, quiz_mode)
+            get_answer = question_generator(difficulty, question_mode)
             print(get_answer)
             if "(" in get_answer:
                 user_answer = input(f"Please factorise this equation: ").replace(" ", "")
@@ -270,26 +280,28 @@ while True:
                 print(f"Please give an answer you have not tried before.\n You *still* have {6 - times_answered} tries "
                       f"left. ")
                 continue
-            # Return whether their answer is correct or incorrect
+            # Different outcomes for correct and incorrect questions
             elif user_answer == get_answer:
                 statement_decorator(f"Well done! You got it in {times_answered}.", "*")
                 result = "correct"
                 score = times_answered
-                outcome = f"Round: {questions_answered}\n You got it in {score}."
+                outcome = f"Round: {questions_answered + 1}\n You got it in {score}.\n"
+                correct_questions += 1
                 break
 
             else:
                 incorrect_answers.append(user_answer)
                 # Allow the user multiple answers
-                if times_answered <= 5:
+                if times_answered <= 4:
                     try_again = string_check("Incorrect. Would you like to try again? ", ["yes", "no"],
                                              "Please answer yes/no").lower()
-                    if try_again == "yes":  # Change to yes/no check
-                        statement_decorator(f"You have {6 - times_answered} tries left", "!")
+                    print()
+                    if try_again == "yes":
+                        statement_decorator(f"You have {5 - times_answered} tries left", "!")
                         continue
                     else:
                         statement_decorator("Good luck next time.", "~")
-                        outcome = f"Round: {questions_answered}\n You lost."
+                        outcome = f"Round: {questions_answered + 1}\n You lost.\n"
                         score = 6
                         incorrect_questions += 1
                         break
@@ -298,7 +310,7 @@ while True:
                 else:
                     print("Incorrect. You ran out of tries.")
                     result = "incorrect"
-                    outcome = f"Round: {questions_answered}\n You ran out of tries."
+                    outcome = f"Round: {questions_answered + 1}\n You ran out of tries.\n"
                     incorrect_questions += 1
                     score = 6
                     break
@@ -329,15 +341,15 @@ while True:
             ave_score = (sum(quiz_score)) / len(quiz_score)
 
             # print quiz summary heading
+            print()
             print("***** Quiz History *****")
+            print()
             for outcome in quiz_summary:
                 # Print the outcome of each round
                 print(outcome)
 
-            print()
-
             # displays quiz stats with % values to the nearest whole number
-            print("Game Statistics", "*")
+            statement_decorator("Game Statistics", "=")
             print("Win: {}, ({:.0f}%)\nLoss: {}, "
                   "({:.0f}%)".format(correct_questions, percent_correct, incorrect_questions, percent_incorrect))
             # displays the best, worst and average score
