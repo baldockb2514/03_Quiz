@@ -1,4 +1,4 @@
-# Version 3 - efficiency
+# Version 3 - increase versatility
 
 # checks user response is yes/no or easy/normal/hard/mix to a given question
 def string_check(question, answer_list, error):

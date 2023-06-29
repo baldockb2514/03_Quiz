@@ -1,4 +1,4 @@
-# Version 3 - efficiency
+# Version 3 - increase efficiency more
 
 # checks user response is yes/no or easy/normal/hard/mix to a given question
 def yn_difficulty(question, check):
