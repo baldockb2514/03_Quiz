@@ -35,11 +35,12 @@ def statement_decorator(statement, decoration):
 
 # Displays instructions
 def instructions():
-    statement_decorator("How to Play", "*")
+    statement_decorator("How to Play", "~")
     print()
     print("For each game you play, you will be asked to choose a mode and difficulty.")
-    print(" The modes you can choose are factorise questions, and expand questions. "
-          "You can also enter mix, if you want both. ")
+    print()
+    print("The modes you can choose are factorise questions, and expand questions. "
+          "You can also enter \"mix\", which means the mode for each question is random. ")
     print()
     print("The Difficulties you can choose from are easy, normal, hard and mix.")
     print(" - Easy questions have 1 bracket, eg. 2(x-1)")
@@ -47,14 +48,18 @@ def instructions():
     print(" - Hard questions will have 3 brackets, eg. (x-1)(x+2)(x-3).")
     print(" - If you choose mix, every question will have a random difficulty.")
     print()
-    print("You will then be given a question and asked to answer it.")
-    print(" - For exponents, please use the ^ symbol, eg. x^2.")
+    print("Then you can choose how many questions you want to be asked. If you don't want a limit,"
+          " you can press <enter> for continuous mode")
     print()
-    print("You will have 5 tries to get the answer correct.")
+    print("You will then be given a question and asked to answer it.")
+    print("!! If a answer includes exponents, please use the ^ symbol, eg. x^2 !!")
+    print()
+    print("You will have 5 tries to get the answer correct, but you can choose to give up earlier.")
     print()
     print("To exit the game, you can enter \"xxx\" when asked for your answer.")
     print()
     print("Enjoy!")
+    print()
     return ""
 
 
@@ -63,7 +68,7 @@ def question_amount():
     while True:
         response = input("How many questions?: ")
 
-        round_error = "Please type either <enter> or an integer that is more than(or equal to) 1"
+        round_error = "Please type either an integer that is more than(or equal to) 1 or <enter> for continuous mode."
 
         if response != "":
             try:
@@ -218,12 +223,14 @@ print()
 print_instructions = string_check("Would you like to see the instructions?: ", ["yes", "no"], "Please answer yes/no.")
 # if yes, print the instructions
 if print_instructions == "yes":
+    print()
+    print()
     instructions()
 
 while True:
 
     # Set counters and strings for later reference
-    questions_answered = 0
+    questions_answered = 1
     incorrect_answers = 0
     correct_questions = 0
     incorrect_questions = 0
@@ -257,11 +264,12 @@ while True:
         # Set questions Heading depending on the mode
         print()
         if quiz_mode == "continuous":
-            heading = f"Continuous Mode: Question {questions_answered + 1}"
+            heading = f"Continuous Mode: Question {questions_answered}"
         else:
-            heading = f"Question of {questions_answered + 1} of {max_questions}"
+            heading = f"Question of {questions_answered} of {max_questions}"
 
         statement_decorator(heading, "-")
+        print()
 
         # only allow a set amount of incorrect answers
         times_answered = 0
@@ -291,9 +299,8 @@ while True:
             # Different outcomes for correct and incorrect questions
             elif user_answer == get_answer:
                 statement_decorator(f"Well done! You got it in {times_answered}.", "*")
-                result = "correct"
                 score = times_answered
-                outcome = f"Round: {questions_answered + 1}\n You got it in {score}.\n"
+                outcome = f"Round: {questions_answered}\n You got it in {score}.\n"
                 correct_questions += 1
                 break
 
@@ -307,18 +314,18 @@ while True:
                     if try_again == "yes":
                         statement_decorator(f"You have {5 - times_answered} tries left", "!")
                         continue
+                    # let the user choose to give up on the question
                     else:
                         statement_decorator("Good luck next time.", "~")
-                        outcome = f"Round: {questions_answered + 1}\n Incorrect.\n"
+                        outcome = f"Round: {questions_answered}\n Incorrect.\n"
                         score = 6
                         incorrect_questions += 1
                         break
 
-                # Don't allow them more than 5 tries
+                # Don't let the user have more than 5 tries to get it right
                 else:
                     print("Incorrect. You ran out of tries.")
-                    result = "incorrect"
-                    outcome = f"Round: {questions_answered + 1}\n You ran out of tries.\n"
+                    outcome = f"Round: {questions_answered}\n You ran out of tries.\n"
                     incorrect_questions += 1
                     score = 6
                     break
@@ -341,7 +348,7 @@ while True:
         see_summary = string_check("Would you like to see the summary of your game? ", ["yes", "no"],
                                    "Please answer yes/no")
         if see_summary == "yes":
-            # Calculate quiz statistics (Best score, worst score average)
+            # Calculate quiz statistics (Best score, worst score average, percentage correct and incorrect)
             percent_correct = correct_questions / questions_answered * 100
             percent_incorrect = incorrect_questions / questions_answered * 100
             best_score = min(quiz_score)
