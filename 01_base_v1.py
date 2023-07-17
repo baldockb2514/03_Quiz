@@ -89,12 +89,14 @@ def question_amount():
 
 # generate questions and answers
 def question_generator(mode, question_type):
-    # Set up lists
+    # Set up lists and strings
     numbers = []
     question_outline = []
     mix_modes = ["easy", "normal", "hard"]
     mix_types = ["factorise", "expand"]
     solved = ""
+    answer = ""
+    question = ""
 
     # If the mode/type is mix, for every question generate a random mode/type
     if mode == "mix":
@@ -107,14 +109,25 @@ def question_generator(mode, question_type):
         # Get numbers for the solved string
         in_bracket = random.randint(-10, 9)
         out_of_bracket = random.randint(-10, 9)
+        x_value = random.randint(-10, 9)
+
+        # don't allow all numbers to be negative to avoid confusing the user
+        if in_bracket < 0 and out_of_bracket < 0 and x_value < 0:
+            in_bracket = in_bracket * -1
+            out_of_bracket = out_of_bracket * -1
+            x_value = x_value * -1
 
         # If either number is 0, make it 10
         if in_bracket == 0:
             in_bracket = 10
         if out_of_bracket == 0:
             out_of_bracket = 10
-        # get one of the numbers for the solved string
+        if x_value == 0:
+            x_value = 10
+
+        # get the numbers for the solved string
         final_number = in_bracket * out_of_bracket
+        easy_x_value = x_value * out_of_bracket
 
         # Add a plus sign for positive numbers, so that the question has a function
         if in_bracket > 0:
@@ -123,8 +136,11 @@ def question_generator(mode, question_type):
             final_number = f"+{final_number}"
 
         # Set answer and question
-        solved = f"{out_of_bracket}x{final_number}"
-        brackets_outline = f"{out_of_bracket}(x{in_bracket})"
+        solved = f"{easy_x_value}x{final_number}"
+        if x_value != 1:
+            brackets_outline = f"{out_of_bracket}({x_value}x{in_bracket})"
+        else:
+            brackets_outline = f"{out_of_bracket}(x{in_bracket})"
         question_outline.append(brackets_outline)
 
     elif mode == "normal" or mode == "hard":
@@ -203,16 +219,12 @@ def question_generator(mode, question_type):
         question_tuple = tuple(question_outline)
         question = "".join(question_tuple)
         answer = solved
-        # print question and return answer
-        print(question)
-        return answer
     elif question_type == "factorise":
         question = solved
         answer_tuple = tuple(question_outline)
         answer = "".join(answer_tuple)
-        # print question and return answer
-        print(question)
-        return answer
+    # return answer and question as list
+    return [answer, question]
 
 
 # Main Routine goes here
@@ -269,18 +281,23 @@ while True:
             heading = f"Question of {questions_answered} of {max_questions}"
 
         statement_decorator(heading, "-")
-        print()
-
-        # only allow a set amount of incorrect answers
-        times_answered = 0
 
         # Set a list to prevent duplicate answers
         incorrect_answers = []
 
+        # set a counter for the amount of times answered
+        times_answered = 0
+
+        # generate the question and answer
+        get_question = question_generator(difficulty, question_mode)
+
         while True:
-            get_answer = question_generator(difficulty, question_mode)
-            print(get_answer)
-            if "(" in get_answer:
+            quiz_question = get_question[1]
+            quiz_answer = get_question[0]
+            print()
+            print(quiz_question)
+            print(quiz_answer)
+            if "(" in quiz_answer:
                 user_answer = input(f"Please factorise this equation: ").replace(" ", "").lower()
             else:
                 user_answer = input(f"Please expand this equation: ").replace(" ", "").lower()
@@ -293,11 +310,11 @@ while True:
 
             # if the answer is a duplicate, print an error and reprint the question
             elif user_answer in incorrect_answers:
-                print(f"Please give an answer you have not tried before.\n You *still* have {6 - times_answered} tries "
-                      f"left. ")
+                print(f"Please give an answer you have not tried before.\n You *still* have {6 - times_answered}"
+                      f" tries left. ")
                 continue
             # Different outcomes for correct and incorrect questions
-            elif user_answer == get_answer:
+            elif user_answer == quiz_answer:
                 statement_decorator(f"Well done! You got it in {times_answered}.", "*")
                 score = times_answered
                 outcome = f"Round: {questions_answered}\n You got it in {score}.\n"
@@ -310,7 +327,6 @@ while True:
                 if times_answered <= 4:
                     try_again = string_check("Incorrect. Would you like to try again? ", ["yes", "no"],
                                              "Please answer yes/no").lower()
-                    print()
                     if try_again == "yes":
                         statement_decorator(f"You have {5 - times_answered} tries left", "!")
                         continue
@@ -336,7 +352,7 @@ while True:
             quiz_score.append(score)
             questions_answered += 1
             # if the number of questions is more than questions answered or the mode is continuous, continue quiz
-            if quiz_mode == "continuous" or max_questions > questions_answered:
+            if quiz_mode == "continuous" or max_questions >= questions_answered:
                 continue
             # otherwise, end quiz
             else:
