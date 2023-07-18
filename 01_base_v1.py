@@ -212,7 +212,7 @@ def question_generator(mode, question_type):
             if final_x_squared_value > 0:
                 final_x_squared_value = f"+{final_x_squared_value}"
 
-            solved = f"X^3{final_x_squared_value}x^2{final_x_value}x{final_integer}"
+            solved = f"x^3{final_x_squared_value}x^2{final_x_value}x{final_integer}"
 
     # Set questions and answers depending on if the question is a factorising or expanding question
     if question_type == "expand":
@@ -223,8 +223,8 @@ def question_generator(mode, question_type):
         question = solved
         answer_tuple = tuple(question_outline)
         answer = "".join(answer_tuple)
-    # return answer and question as list
-    return [answer, question]
+    # return answer and question
+    return answer, question
 
 
 # Main Routine goes here
@@ -242,7 +242,7 @@ if print_instructions == "yes":
 while True:
 
     # Set counters and strings for later reference
-    questions_answered = 1
+    questions_answered = 0
     incorrect_answers = 0
     correct_questions = 0
     incorrect_questions = 0
@@ -276,9 +276,9 @@ while True:
         # Set questions Heading depending on the mode
         print()
         if quiz_mode == "continuous":
-            heading = f"Continuous Mode: Question {questions_answered}"
+            heading = f"Continuous Mode: Question {questions_answered + 1}"
         else:
-            heading = f"Question of {questions_answered} of {max_questions}"
+            heading = f"Question of {questions_answered + 1} of {max_questions}"
 
         statement_decorator(heading, "-")
 
@@ -294,7 +294,6 @@ while True:
         while True:
             quiz_question = get_question[1]
             quiz_answer = get_question[0]
-            print()
             print(quiz_question)
             print(quiz_answer)
             if "(" in quiz_answer:
@@ -329,6 +328,7 @@ while True:
                                              "Please answer yes/no").lower()
                     if try_again == "yes":
                         statement_decorator(f"You have {5 - times_answered} tries left", "!")
+                        print()
                         continue
                     # let the user choose to give up on the question
                     else:
@@ -352,7 +352,7 @@ while True:
             quiz_score.append(score)
             questions_answered += 1
             # if the number of questions is more than questions answered or the mode is continuous, continue quiz
-            if quiz_mode == "continuous" or max_questions >= questions_answered:
+            if quiz_mode == "continuous" or max_questions > questions_answered:
                 continue
             # otherwise, end quiz
             else:
@@ -373,7 +373,7 @@ while True:
 
             # print quiz summary heading
             print()
-            print("***** Quiz History *****")
+            statement_decorator("Quiz History", "*")
             print()
             for outcome in quiz_summary:
                 # Print the outcome of each round
@@ -392,6 +392,8 @@ while True:
 
     # If yes, Replay quiz
     if replay == "yes":
+        print()
+        statement_decorator("New Game", "---")
         continue
     # Else, end program
     else:
