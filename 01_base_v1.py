@@ -224,7 +224,7 @@ def question_generator(mode, question_type):
         answer_tuple = tuple(question_outline)
         answer = "".join(answer_tuple)
     # return answer and question
-    return answer, question
+    return answer, question, question_type
 
 
 # Main Routine goes here
@@ -250,6 +250,7 @@ while True:
     quiz_summary = []
     quiz_score = []
     outcome = ""
+    user_result = []
 
     # get the mode
     print()
@@ -289,6 +290,7 @@ while True:
         times_answered = 0
 
         # generate the question and answer
+        list_answer = []
         get_question = question_generator(difficulty, question_mode)
 
         while True:
@@ -296,7 +298,9 @@ while True:
             quiz_answer = get_question[0]
             print(quiz_question)
             print(quiz_answer)
-            if "(" in quiz_answer:
+            if get_question[2] == "factorise":
+                list_answer = quiz_answer.split("(")
+                print(list_answer)
                 user_answer = input(f"Please factorise this equation: ").replace(" ", "").lower()
             else:
                 user_answer = input(f"Please expand this equation: ").replace(" ", "").lower()
@@ -312,8 +316,9 @@ while True:
                 print(f"Please give an answer you have not tried before.\n You *still* have {6 - times_answered}"
                       f" tries left. ")
                 continue
+
             # Different outcomes for correct and incorrect questions
-            elif user_answer == quiz_answer:
+            if user_answer == quiz_answer:
                 statement_decorator(f"Well done! You got it in {times_answered}.", "*")
                 score = times_answered
                 outcome = f"Round: {questions_answered}\n You got it in {score}.\n"
@@ -321,30 +326,46 @@ while True:
                 break
 
             else:
-                incorrect_answers.append(user_answer)
-                # Allow the user multiple answers
-                if times_answered <= 4:
-                    try_again = string_check("Incorrect. Would you like to try again? ", ["yes", "no"],
-                                             "Please answer yes/no").lower()
-                    if try_again == "yes":
-                        statement_decorator(f"You have {5 - times_answered} tries left", "!")
-                        print()
-                        continue
-                    # let the user choose to give up on the question
-                    else:
-                        statement_decorator("Good luck next time.", "~")
-                        outcome = f"Round: {questions_answered}\n Incorrect.\n"
-                        score = 6
-                        incorrect_questions += 1
+                # allow the brackets in answer to be in any order
+                if get_question[2] == "factorise":
+                    for item in list_answer:
+                        if item in user_answer:
+                            user_result.append("yes")
+                    if len(user_result) == len(list_answer):
+                        print(user_result)
+                        statement_decorator(f"Well done! You got it in {times_answered}.", "*")
+                        score = times_answered
+                        outcome = f"Round: {questions_answered}\n You got it in {score}.\n"
+                        correct_questions += 1
                         break
+                    else:
+                        user_result.append("no")
+                if "no" in user_result or get_question[2] == "expand":
+                    incorrect_answers.append(user_answer)
+                    # Allow the user multiple answers
+                    if times_answered <= 4:
+                        try_again = string_check("Incorrect. Would you like to try again? ", ["yes", "no"],
+                                                 "Please answer yes/no").lower()
+                        if try_again == "yes":
+                            statement_decorator(f"You have {5 - times_answered} tries left", "!")
+                            print()
+                            continue
+                        # let the user choose to give up on the question
+                        else:
+                            statement_decorator("Good luck next time.", "~")
+                            outcome = f"Round: {questions_answered}\n Incorrect.\n"
+                            score = 6
+                            incorrect_questions += 1
+                            break
 
-                # Don't let the user have more than 5 tries to get it right
-                else:
-                    print("Incorrect. You ran out of tries.")
-                    outcome = f"Round: {questions_answered}\n You ran out of tries.\n"
-                    incorrect_questions += 1
-                    score = 6
-                    break
+                    # Don't let the user have more than 5 tries to get it right
+                    else:
+                        print("Incorrect. You ran out of tries.")
+                        outcome = f"Round: {questions_answered}\n You ran out of tries.\n"
+                        incorrect_questions += 1
+                        score = 6
+                        break
+                break
 
         # If the exit code was entered, don't append the outcome. Otherwise, add the outcome to the list
         if user_answer != "xxx":
