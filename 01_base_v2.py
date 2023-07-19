@@ -1,18 +1,20 @@
+# improve efficiency
+
 import random
 import math
 
 
 # checks user response is yes/no or easy/normal/hard/mix to a given question
-def string_check(question, answer_list, error):
+def string_check(string, answer_list, error):
     valid = False
     while not valid:
         # make response lowercase and get rid of spaces
-        response = input(question).lower().replace(" ", "")
+        response = input(string).lower().replace(" ", "")
 
         while True:
-            for item in answer_list:
-                if response == item[0] or response == item:
-                    return item
+            for answer_item in answer_list:
+                if response == answer_item[0] or response == answer_item:
+                    return answer_item
 
             # If not, print error
             else:
@@ -95,8 +97,6 @@ def question_generator(mode, question_type):
     mix_modes = ["easy", "normal", "hard"]
     mix_types = ["factorise", "expand"]
     solved = ""
-    answer = ""
-    question = ""
 
     # If the mode/type is mix, for every question generate a random mode/type
     if mode == "mix":
@@ -212,17 +212,7 @@ def question_generator(mode, question_type):
 
             solved = f"x^3{final_x_squared_value}x^2{final_x_value}x{final_integer}"
 
-    # Set questions and answers depending on if the question is a factorising or expanding question
-    if question_type == "expand":
-        question_tuple = tuple(question_outline)
-        question = "".join(question_tuple)
-        answer = solved
-    elif question_type == "factorise":
-        question = solved
-        answer_tuple = tuple(question_outline)
-        answer = "".join(answer_tuple)
-    # return answer and question
-    return answer, question, question_type
+    return solved, question_outline, question_type
 
 
 # Main Routine goes here
@@ -248,7 +238,6 @@ while True:
     quiz_summary = []
     quiz_score = []
     outcome = ""
-    user_result = []
 
     # get the mode
     print()
@@ -288,20 +277,24 @@ while True:
         times_answered = 0
 
         # generate the question and answer
-        list_answer = []
         get_question = question_generator(difficulty, question_mode)
 
         while True:
-            quiz_question = get_question[1]
-            quiz_answer = get_question[0]
+            user_result = []
+            # set questions and answers based on question type
+            if get_question[2] == "factorise":
+                quiz_question = get_question[0]
+                quiz_answer = get_question[1]
+            else:
+                quiz_question = get_question[1]
+                quiz_answer = get_question[0]
+                question_tuple = tuple(quiz_question)
+                question = "".join(question_tuple)
+
             print(quiz_question)
             print(quiz_answer)
-            if get_question[2] == "factorise":
-                list_answer = quiz_answer.split("(")
-                print(list_answer)
-                user_answer = input(f"Please factorise this equation: ").replace(" ", "").lower()
-            else:
-                user_answer = input(f"Please expand this equation: ").replace(" ", "").lower()
+            user_answer = input(f"Please {get_question[2]} this equation: ").replace(" ", "").lower()
+
             times_answered += 1
 
             # If user inputs xxx, end game
@@ -326,11 +319,10 @@ while True:
             else:
                 # allow the brackets in a factorise answer to be in any order
                 if get_question[2] == "factorise":
-                    for item in list_answer:
+                    for item in quiz_answer:
                         if item in user_answer:
                             user_result.append("yes")
-                    if len(user_result) == len(list_answer):
-                        print(user_result)
+                    if len(user_result) == len(quiz_answer):
                         statement_decorator(f"Well done! You got it in {times_answered}.", "*")
                         score = times_answered
                         outcome = f"Round: {questions_answered}\n You got it in {score}.\n"
