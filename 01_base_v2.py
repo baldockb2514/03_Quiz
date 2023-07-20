@@ -11,6 +11,7 @@ def string_check(string, answer_list, error):
         # make response lowercase and get rid of spaces
         response = input(string).lower().replace(" ", "")
 
+        # check if response is in the list or is the first letter of the string in a list
         while True:
             for answer_item in answer_list:
                 if response == answer_item[0] or response == answer_item:
@@ -45,16 +46,14 @@ def instructions():
           "You can also enter \"mix\", which means the mode for each question is random. ")
     print()
     print("The Difficulties you can choose from are easy, normal, hard and mix.")
-    print(" - Easy questions have 1 bracket, eg. 2(x-1)")
-    print(" - Normal questions have 2 brackets, eg. (x+1)(x-2)")
-    print(" - Hard questions will have 3 brackets, eg. (x-1)(x+2)(x-3).")
-    print(" - If you choose mix, every question will have a random difficulty.")
+    print("If you choose mix, every question will have a random difficulty.")
     print()
     print("Then you can choose how many questions you want to be asked. If you don't want a limit,"
           " you can press <enter> for continuous mode")
     print()
     print("You will then be given a question and asked to answer it.")
     print("!! If a answer includes exponents, please use the ^ symbol, eg. x^2 !!")
+    print("!! If a x will have a 1 in front of it (1x), please keep it, instead of just writing x.")
     print()
     print("You will have 5 tries to get the answer correct, but you can choose to give up earlier.")
     print()
@@ -135,10 +134,7 @@ def question_generator(mode, question_type):
 
         # Set answer and question
         solved = f"{easy_x_value}x{final_number}"
-        if x_value != 1:
-            brackets_outline = f"{out_of_bracket}({x_value}x{in_bracket})"
-        else:
-            brackets_outline = f"{out_of_bracket}(x{in_bracket})"
+        brackets_outline = f"{out_of_bracket}({x_value}x{in_bracket})"
         question_outline.append(brackets_outline)
 
     elif mode == "normal" or mode == "hard":
@@ -212,6 +208,10 @@ def question_generator(mode, question_type):
 
             solved = f"x^3{final_x_squared_value}x^2{final_x_value}x{final_integer}"
 
+    if question_type == "expand":
+        question_tuple = tuple(question_outline)
+        question_outline = "".join(question_tuple)
+
     return solved, question_outline, question_type
 
 
@@ -249,7 +249,7 @@ while True:
     print()
     difficulty = string_check("Do you want the questions to be Easy, Normal, Hard or a Mix?: ",
                               ["easy", "normal", "hard", "mix"], "Please enter easy/normal/hard/mix.")
-    print(f"Thank you. Your questions will be {difficulty}.")
+    print(f"Thank you. Your question mode is be {difficulty}.")
 
     # get the amount of questions
     print()
@@ -288,11 +288,8 @@ while True:
             else:
                 quiz_question = get_question[1]
                 quiz_answer = get_question[0]
-                question_tuple = tuple(quiz_question)
-                question = "".join(question_tuple)
 
             print(quiz_question)
-            print(quiz_answer)
             user_answer = input(f"Please {get_question[2]} this equation: ").replace(" ", "").lower()
 
             times_answered += 1
@@ -305,14 +302,15 @@ while True:
             # if the answer is a duplicate, print an error and reprint the question
             elif user_answer in incorrect_answers:
                 print(f"Please give an answer you have not tried before.\n You *still* have {6 - times_answered}"
-                      f" tries left. ")
+                      f" tries left.\n ")
+                times_answered -= 1
                 continue
 
             # Different outcomes for correct and incorrect questions
             if user_answer == quiz_answer:
                 statement_decorator(f"Well done! You got it in {times_answered}.", "*")
                 score = times_answered
-                outcome = f"Round: {questions_answered}\n You got it in {score}.\n"
+                outcome = f"Round: {questions_answered}\n You got it in {score}."
                 correct_questions += 1
                 break
 
@@ -325,7 +323,7 @@ while True:
                     if len(user_result) == len(quiz_answer):
                         statement_decorator(f"Well done! You got it in {times_answered}.", "*")
                         score = times_answered
-                        outcome = f"Round: {questions_answered}\n You got it in {score}.\n"
+                        outcome = f"Round: {questions_answered}\n You got it in {score}."
                         correct_questions += 1
                         break
                     else:
@@ -344,7 +342,7 @@ while True:
                         # let the user choose to give up on the question
                         else:
                             statement_decorator("Good luck next time.", "~")
-                            outcome = f"Round: {questions_answered}\n Incorrect.\n"
+                            outcome = f"Round: {questions_answered}\n Incorrect."
                             score = 6
                             incorrect_questions += 1
                             break
@@ -352,7 +350,7 @@ while True:
                     # Don't let the user have more than 5 tries to get it right
                     else:
                         print("Incorrect. You ran out of tries.")
-                        outcome = f"Round: {questions_answered}\n You ran out of tries.\n"
+                        outcome = f"Round: {questions_answered}\n You ran out of tries."
                         incorrect_questions += 1
                         score = 6
                         break
