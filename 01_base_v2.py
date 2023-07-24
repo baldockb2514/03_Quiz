@@ -48,7 +48,7 @@ def instructions():
     print("The Difficulties you can choose from are easy, normal, hard and mix.")
     print("If you choose mix, every question will have a random difficulty.")
     print()
-    print("Then you can choose how many questions you want to be asked. If you don't want a limit,"
+    print("Then you can choose how many questions you want to be asked, up to a limit of 10. If you don't want a limit,"
           " you can press <enter> for continuous mode")
     print()
     print("You will then be given a question and asked to answer it.")
@@ -64,18 +64,25 @@ def instructions():
     return ""
 
 
-# Check if a number is an Integer above 0(or "")
+# Check if a number is an Integer between or equal to 1 - 10 or is "" for continuous mode
 def question_amount():
     while True:
         response = input("How many questions?: ")
 
-        round_error = "Please type either an integer that is more than(or equal to) 1 or <enter> for continuous mode."
+        round_error = "Please type either an integer that is between(or equal to) 1 - 10 or <enter> for continuous " \
+                      "mode."
 
         if response != "":
             try:
                 response = int(response)
 
+                # If the response is not between or equal to 1 - 10 output error and re-ask question
                 if response < 1:
+                    print(round_error)
+                    print()
+                    continue
+
+                elif response > 10:
                     print(round_error)
                     print()
                     continue
@@ -280,14 +287,17 @@ while True:
         get_question = question_generator(difficulty, question_mode)
 
         while True:
+            # set answer list for factorise questions
             user_result = []
             # set questions and answers based on question type
             if get_question[2] == "factorise":
                 quiz_question = get_question[0]
                 quiz_answer = get_question[1]
+                print(*quiz_answer)
             else:
                 quiz_question = get_question[1]
                 quiz_answer = get_question[0]
+                print(quiz_answer)
 
             print(quiz_question)
             user_answer = input(f"Please {get_question[2]} this equation: ").replace(" ", "").lower()
@@ -310,7 +320,7 @@ while True:
             if user_answer == quiz_answer:
                 statement_decorator(f"Well done! You got it in {times_answered}.", "*")
                 score = times_answered
-                outcome = f"Round: {questions_answered}\n You got it in {score}."
+                outcome = f"Round: {questions_answered + 1}\n You got it in {score}."
                 correct_questions += 1
                 break
 
@@ -323,7 +333,7 @@ while True:
                     if len(user_result) == len(quiz_answer):
                         statement_decorator(f"Well done! You got it in {times_answered}.", "*")
                         score = times_answered
-                        outcome = f"Round: {questions_answered}\n You got it in {score}."
+                        outcome = f"Round: {questions_answered + 1}\n You got it in {score}."
                         correct_questions += 1
                         break
                     else:
@@ -342,7 +352,7 @@ while True:
                         # let the user choose to give up on the question
                         else:
                             statement_decorator("Good luck next time.", "~")
-                            outcome = f"Round: {questions_answered}\n Incorrect."
+                            outcome = f"Round: {questions_answered + 1}\n Incorrect."
                             score = 6
                             incorrect_questions += 1
                             break
@@ -350,7 +360,7 @@ while True:
                     # Don't let the user have more than 5 tries to get it right
                     else:
                         print("Incorrect. You ran out of tries.")
-                        outcome = f"Round: {questions_answered}\n You ran out of tries."
+                        outcome = f"Round: {questions_answered + 1}\n You ran out of tries."
                         incorrect_questions += 1
                         score = 6
                         break
@@ -371,7 +381,7 @@ while True:
     # if at least one question has been answered, ask the user if they want to see a summary of their quiz,
     if questions_answered != 0:
         print()
-        see_summary = string_check("Would you like to see the summary of your game? ", ["yes", "no"],
+        see_summary = string_check("Would you like to see the summary of your quiz? ", ["yes", "no"],
                                    "Please answer yes/no")
         if see_summary == "yes":
             # Calculate quiz statistics (Best score, worst score average, percentage correct and incorrect)
@@ -398,7 +408,7 @@ while True:
 
     # Asks if the user wants to replay the quiz
     print()
-    replay = string_check("Would you like to play again?: ", ["yes", "no"], "Please answer yes/no")
+    replay = string_check("Would you like to replay the quiz?: ", ["yes", "no"], "Please answer yes/no")
 
     # If yes, Replay quiz
     if replay == "yes":

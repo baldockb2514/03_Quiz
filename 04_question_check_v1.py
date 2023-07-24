@@ -1,17 +1,24 @@
 # v1 - recycled from RPS
 
-# Check if a number is an Integer above 0(or "")
+# Check if a number is an Integer between or equal to 1 - 10 or is "" for continuous mode
 def question_amount():
     while True:
         response = input("How many questions?: ")
 
-        round_error = "Please type either <enter> or an integer that is more than(or equal to) 1"
+        round_error = "Please type either an integer that is between(or equal to) 1 - 10 or <enter> for continuous " \
+                      "mode."
 
         if response != "":
             try:
                 response = int(response)
 
+                # If the response is not between or equal to 1 - 10 output error and re-ask question
                 if response < 1:
+                    print(round_error)
+                    print()
+                    continue
+
+                elif response > 10:
                     print(round_error)
                     print()
                     continue
@@ -24,19 +31,12 @@ def question_amount():
         return response
 
 
-print()
-questions = question_amount()
-questions_answered = 1
 while True:
     print()
-    print(f"Round {questions_answered} of {questions}")
-    end_round = input("Would you like to end this round?: ")
-    if end_round == "y":
-        if questions_answered == questions:
-            break
-        else:
-            questions_answered += 1
-            continue
+    questions = question_amount()
+    if questions != "":
+        print(f"Question amount = {questions}")
+    else:
+        print("Continuous mode")
 
-print()
-print("Thanks for playing!")
+    continue

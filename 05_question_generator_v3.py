@@ -168,7 +168,7 @@ def question_generator(mode, question_type):
 # Testing
 while True:
 
-    mix_test = question_generator("mix", "factorise")
+    mix_test = question_generator("normal", "factorise")
 
     if mix_test == "incorrect":
         print("good luck next time")
