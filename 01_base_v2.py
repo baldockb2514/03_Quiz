@@ -293,11 +293,9 @@ while True:
             if get_question[2] == "factorise":
                 quiz_question = get_question[0]
                 quiz_answer = get_question[1]
-                print(*quiz_answer)
             else:
                 quiz_question = get_question[1]
                 quiz_answer = get_question[0]
-                print(quiz_answer)
 
             print(quiz_question)
             user_answer = input(f"Please {get_question[2]} this equation: ").replace(" ", "").lower()
@@ -400,7 +398,9 @@ while True:
                 print(outcome)
 
             # displays quiz stats with % values to the nearest whole number
+            print()
             statement_decorator("Quiz Statistics", "=")
+            print()
             print("Correct: {}, ({:.0f}%)\nIncorrect: {}, "
                   "({:.0f}%)".format(correct_questions, percent_correct, incorrect_questions, percent_incorrect))
             # displays the best, worst and average score
